@@ -1,18 +1,38 @@
-import { useState } from 'react';
-import { Book } from '../../types';
-import booksJson from './../../books.json';
+import type { Book } from "../../types";
 
-export function BooksList() {
-    const [books, setBooks] = useState<Book[]>(booksJson.library.map(book => book.book));
+interface Props {
+    books: Book[]
+    addToReadList: (isbn: Book['ISBN']) => void
+    openShowReadList: () => void
+}
+
+export function BooksList({ books, addToReadList, openShowReadList }: Props) {
+
+    const handlerOnClickAddToReadList = (isbn: Book['ISBN']) => () => {
+        addToReadList(isbn);
+        openShowReadList();
+    };
 
     return (
-        <section className='grid w-full grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-8'>
+        <section className='grid w-full grid-cols-[repeat(auto-fill,minmax(240px,1fr))] place-items-center gap-8'>
             {books.map(book => 
-                <article className='grid grid-rows-[auto, 1fr] gap-4'>
-                    <figure className='aspect-[9/14] rounded-md'>
-                        <img className='w-full h-full rounded-md object-cover' src={book.cover} alt={book.title} />
+                <article 
+                    key={book.ISBN}
+                    className='grid grid-rows-[auto,1fr] gap-4'
+                >
+                    <figure 
+                        className='aspect-[9/14] rounded-md'
+                        onClick={handlerOnClickAddToReadList(book.ISBN)}
+                    >
+                        <img 
+                            className='w-full h-full rounded-md object-cover' 
+                            src={book.cover} 
+                            alt={book.title} 
+                        />
                     </figure>
-                    <p className='text-md line-clamp-3 opacity-80'>{book.title}</p>
+                    <p className='text-md line-clamp-3 opacity-80'>
+                        {book.title}
+                    </p>
                 </article>
             )}
         </section>
