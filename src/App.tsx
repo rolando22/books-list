@@ -1,30 +1,24 @@
 import { useState } from 'react';
-import { BooksList, Navbar, ReadList } from './components';
-import type { Book } from './types';
-import booksJson from './books.json';
+import { BooksList, Loader, Navbar, ReadList } from './components';
+import { useBooks } from './hooks/useBooks';
+import { useReadList } from './hooks/useReadList';
 import './App.css';
 
 export function App() {
-    const [books, setBooks] = useState<Book[]>(booksJson.library.map(book => book.book));
-    const [readListId, setReadListId] = useState<Book['ISBN'][]>([]);
-    const [showReadList, setShowReadList] = useState<boolean>(false);
     const [filters, setFilters] = useState<{genre: string, pages: number}>({ genre: 'all', pages: 0 });
+    const { books, isLoading, isError } = useBooks();
+    const { 
+        addToReadList, 
+        removeToReadList, 
+        getAvailableBooks, 
+        getReadList, 
+        openShowReadList, 
+        closeShowReadList, 
+        showReadList, 
+    } = useReadList();
 
-    const availableBooks = books.filter(book => !readListId.includes(book.ISBN));
-    const readList = books.filter(book => readListId.includes(book.ISBN));
-
-    const addToReadList = (isbn: Book['ISBN']) => {
-        const newReadListId = [...readListId, isbn];
-        setReadListId(newReadListId);
-    };
-
-    const removeToReadList = (isbn: Book['ISBN']) => {
-        const newReadListId = readListId.filter(id => id !== isbn)
-        setReadListId(newReadListId);
-    };
-
-    const openShowReadList = () => setShowReadList(true);
-    const closeShowReadList = () => setShowReadList(false);
+    const availableBooks = getAvailableBooks({ books });
+    const readList = getReadList({ books });
 
     const genres = Array.from(new Set(books.map(book => book.genre)));
 
@@ -41,18 +35,21 @@ export function App() {
             <header className='w-full'>
                 <Navbar 
                     availableBooksTotal={filteredAvailableBooks.length}
-                    readListTotal={readListId.length}
+                    readListTotal={readList.length}
                     genres={genres}
                     filters={filters}
                     setterFilters={setterFilters}
                  />
             </header>
-            <main className='w-full'>
-                <BooksList 
-                    books={filteredAvailableBooks} 
-                    addToReadList={addToReadList} 
-                    openShowReadList={openShowReadList}
-                />
+            <main className='w-full flex justify-center'>
+                {isLoading && <Loader />}
+                {!isLoading && !isError && 
+                    <BooksList 
+                        books={filteredAvailableBooks} 
+                        addToReadList={addToReadList} 
+                        openShowReadList={openShowReadList}
+                    />
+                }
                 {showReadList && 
                     <ReadList 
                         readList={readList} 
