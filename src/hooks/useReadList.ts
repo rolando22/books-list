@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getReadListId, saveReadListId } from './../services/readList';
 import type { Book } from "../types";
 
 export function useReadList() {
     const [readListId, setReadListId] = useState<Book['ISBN'][]>(getReadListId());
     const [showReadList, setShowReadList] = useState<boolean>(false);
+
+    useEffect(() => {
+        function updateReadList() {
+            const newReadListId = getReadListId();
+            setReadListId(newReadListId);
+        }
+
+        addEventListener('storage', updateReadList);
+
+        return () => {
+            removeEventListener('storage', updateReadList);
+        };
+    }, []);
 
     const addToReadList = (isbn: Book['ISBN']) => {
         const newReadListId = [...readListId, isbn];
