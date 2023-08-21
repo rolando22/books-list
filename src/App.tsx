@@ -31,7 +31,7 @@ export function App() {
 
     return (
         <>
-            <h1>Lista de Libros</h1>
+            <h1 className='w-full text-2xl'>Lista de Libros</h1>
             <header className='w-full'>
                 <Navbar 
                     availableBooksTotal={filteredAvailableBooks.length}

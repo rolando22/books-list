@@ -18,10 +18,10 @@ export function BooksList({ books, addToReadList, openShowReadList }: Props) {
             {books.map(book => 
                 <article 
                     key={book.ISBN}
-                    className='grid grid-rows-[auto,1fr] gap-4'
+                    className='w-full h-full grid grid-rows-[auto,1fr] gap-4'
                 >
                     <figure 
-                        className='aspect-[9/14] rounded-md'
+                        className='aspect-[9/14] rounded-md relative'
                         onClick={handlerOnClickAddToReadList(book.ISBN)}
                     >
                         <img 
@@ -29,6 +29,12 @@ export function BooksList({ books, addToReadList, openShowReadList }: Props) {
                             src={book.cover} 
                             alt={book.title} 
                         />
+                        <p className='absolute bottom-1 left-2 bg-orange-700 text-md p-1 rounded-md'>
+                            {book.genre}
+                        </p>
+                        <p className='absolute top-1 right-2 bg-yellow-200 text-md px-1 rounded-md text-black'>
+                            {book.pages}
+                        </p>
                     </figure>
                     <p className='text-md line-clamp-3 opacity-80'>
                         {book.title}
